@@ -13,8 +13,14 @@ def cadastrar_pensamento(estado):
         print('Limite de pensamentos atingido!')
         return
     
-    pensamento = {}
-    pensamento['title'] = input('Digite o título do pensamento:\n')
+    titulo = input('Digite o título do pensamento:\n')
+    
+    for pensamento in estado['pensamentos']:
+        if pensamento['title'] == titulo:
+            print('Pensamento já cadastrado!')
+            return
+    
+    pensamento = {'title': titulo}
     estado['pensamentos'].append(pensamento)
     print('Pensamento cadastrado com sucesso!')
     return
