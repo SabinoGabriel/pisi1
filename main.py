@@ -1,61 +1,115 @@
+import random
+import datetime
 
-import random 
-import datetime 
+estado = {
+    'pensamentos': [],
+    'pensamento_diario': None,
+    'descanso': False,
+    'data': None 
+}
 
-problemas = []
-problema_diario = None
-descanso = False
-
-def cadastrar_problema():
-    global problemas
-    problema = input('Digite o título do problema:\n')
-    problemas.append(problema)
-    print('Problema cadastrado com sucesso!')
+def cadastrar_pensamento(estado):
+    if len(estado['pensamentos']) == 20:
+        print('Limite de pensamentos atingido!')
+        return
+    
+    titulo = input('Digite o título do pensamento:\n')
+    
+    for pensamento in estado['pensamentos']:
+        if pensamento['title'] == titulo:
+            print('Pensamento já cadastrado!')
+            return
+    
+    pensamento = {'title': titulo}
+    estado['pensamentos'].append(pensamento)
+    print('Pensamento cadastrado com sucesso!')
     return
 
-def visualizar_problema():
-    global problemas, problema_diario, descanso
-    if len(problemas) == 0:
-        print('Nenhum problema cadastrado!')
-    elif descanso == True:
+def visualizar_pensamento(estado):
+    if len(estado['pensamentos']) == 0:
+        print('Nenhum pensamento cadastrado!')
+
+    elif estado['descanso'] == True and estado['data'] == datetime.date.today():
         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
-    else:
-        problema_diario = problemas[-1]
-        print(f'Problema do dia:\n {problema_diario}')
+
+    elif estado['data'] != datetime.date.today():
+        estado['descanso'] = False
+        estado['data'] = datetime.date.today()
+        estado['pensamento_diario'] = estado['pensamentos'][random.randint(0,len(estado['pensamentos'])-1)]
+        print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+
+    elif estado['data'] == datetime.date.today():
+        print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
     return
 
-def concluir_problema():
-    global problemas, problema_diario, descanso
-    if len(problemas) == 0:
-        print('Nenhum problema cadastrado!')
-    elif descanso == True:
+# contador = 1
+# def visualizar_pensamento_manual(estado):
+#     global contador
+#     if estado['data'] is None:
+#         estado['data'] = datetime.date.today()
+#     else:
+#         estado['data'] += datetime.timedelta(days=contador)
+#         contador += 1
+#     if len(estado['pensamentos']) == 0:
+#         print('Nenhum pensamento cadastrado!')
+
+#     elif estado['descanso'] == True and estado['data'] == None:
+#         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
+
+#     elif estado['data'] != datetime.date.today():
+#         estado['descanso'] = False
+#         estado['data'] = datetime.date.today()
+#         estado['pensamento_diario'] = estado['pensamentos'][random.randint(0,len(estado['pensamentos'])-1)]
+#         print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+
+#     elif estado['data'] == datetime.date.today():
+#         print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
+#     return
+
+def concluir_pensamento(estado):
+    if len(estado['pensamentos']) == 0:
+        print('Nenhum pensamento cadastrado!')
+
+    elif estado['data'] != datetime.date.today():
+        print('Pensamento do dia ainda não visualizado!')
+
+    elif estado['descanso']:
         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
-    elif problema_diario != None:
-        print(f'Problema do dia:\n {problema_diario}')
-        problemas.pop()
-        print('Problema concluído!\nDescanse sua mente para o próximo desafio.')
-        descanso = True
-        problema_diario = None
+
+    elif estado['pensamento_diario'] is not None:
+        print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+        
+        for pensamento in estado['pensamentos']:
+            if pensamento['title'] == estado['pensamento_diario']['title']:
+                estado['pensamentos'].remove(pensamento)
+                break
+        
+        print('Pensamento concluído!\nDescanse sua mente para o próximo desafio.')
+        estado['descanso'] = True
+        estado['pensamento_diario'] = None
+
     else:
-        print('Você não visualizou o problema do dia!')
+        print('Você não visualizou o pensamento do dia!')
 
     return
 
-def menu():
-    opcao = input(f'Digite: \n1 -> Cadastrar problema\n2 -> Visualizar problema\n3 -> Concluir problema\n4 -> Sair\n')
-
-    while True:
+def menu(estado):
+    opcao = ''
+    while opcao != '4':
+        opcao = input(f'Digite: \n1 -> Cadastrar pensamento\n2 -> Visualizar pensamento\n3 -> Concluir pensamento\n4 -> Sair\n')
         if opcao == '1':
-            cadastrar_problema()
+            cadastrar_pensamento(estado)
         elif opcao == '2':
-            visualizar_problema()
+            visualizar_pensamento(estado)
         elif opcao == '3':
-            concluir_problema()
+            concluir_pensamento(estado)
         elif opcao == '4':
             print('Até amanhã!')
-            break
+        
+        # Função para alterar a data manualmente
+        # elif opcao == '!':
+        #     visualizar_pensamento_manual(estado)
         else:
             print('Opção inválida!')
-        opcao = input(f'Digite: \n1 -> Cadastrar problema\n2 -> Visualizar problema\n3 -> Concluir problema\n4 -> Sair\n')
 
-menu()
+menu(estado)
