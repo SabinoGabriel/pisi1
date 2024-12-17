@@ -6,7 +6,8 @@ estado = {
     'pensamento_diario': None,
     'descanso': False,
     'data': None,
-    'aux_list': []
+    'aux_list': [],
+    'sample': []
 }
 
 def cadastrar_pensamento(estado):
@@ -47,6 +48,26 @@ def visualizar_pensamento(estado):
         estado['pensamento_diario'] = estado['aux_list'][random.randint(0,len(estado['aux_list'])-1)]
         estado['aux_list'].remove(estado['pensamento_diario'])
         print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+
+        sample_size = 0
+        if len(estado['pensamentos']) < 9:
+            sample_size = len(estado['pensamentos'])//2
+        else:
+            sample_size = 4
+
+        daily_index = -1
+        for i, pensamento in enumerate(estado['pensamentos']):
+            if pensamento == estado['pensamento_diario']:
+                daily_index = i
+                break
+        index_list = list(range(len(estado['pensamentos'])))
+        index_list.remove(daily_index)
+
+        estado['sample'].clear()
+
+        index_sample = random.sample(index_list, sample_size)
+        for i in range(sample_size):
+            estado['sample'].append(estado['pensamentos'][index_sample[i]])
 
     elif estado['data'] == datetime.date.today():
         print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
