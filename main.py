@@ -175,6 +175,30 @@ def mostrar_sample_diario(estado):
 
     return
 
+# contador = 1
+# def visualizar_pensamento_manual(estado):
+#     global contador
+#     if estado['data'] is None:
+#         estado['data'] = datetime.date.today()
+#     else:
+#         estado['data'] += datetime.timedelta(days=contador)
+#         contador += 1
+#     if len(estado['pensamentos']) == 0:
+#         print('Nenhum pensamento cadastrado!')
+
+#     elif estado['descanso'] == True and estado['data'] == None:
+#         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
+
+#     elif estado['data'] != datetime.date.today():
+#         estado['descanso'] = False
+#         estado['data'] = datetime.date.today()
+#         estado['pensamento_diario'] = estado['pensamentos'][random.randint(0,len(estado['pensamentos'])-1)]
+#         print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+
+#     elif estado['data'] == datetime.date.today():
+#         print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
+#     return
+
 def menu(estado):
     opcao = ''
     while opcao != '0':
@@ -189,7 +213,10 @@ def menu(estado):
             mostrar_sample_diario(estado)
         elif opcao == '0':
             print('Até amanhã!')
-        
+                # Função para alterar a data manualmente
+        # elif opcao == '!':
+        #     visualizar_pensamento_manual(estado)
+    
         else:
             print('Opção inválida!')
 
