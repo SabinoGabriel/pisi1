@@ -5,7 +5,10 @@ estado = {
     'pensamentos': [],
     'pensamento_diario': None,
     'descanso': False,
-    'data': None 
+    'data': None,
+    'aux_list': [],
+    'sample': [],
+    'freezer': []
 }
 
 def cadastrar_pensamento(estado):
@@ -13,8 +16,8 @@ def cadastrar_pensamento(estado):
         print('Limite de pensamentos atingido!')
         return
     
-    titulo = input('Digite o título do pensamento:\n')
-    
+    titulo = input('Digite o título do pensamento:\n').capitalize().strip()
+
     for pensamento in estado['pensamentos']:
         if pensamento['title'] == titulo:
             print('Pensamento já cadastrado!')
@@ -22,12 +25,15 @@ def cadastrar_pensamento(estado):
     
     pensamento = {'title': titulo}
     estado['pensamentos'].append(pensamento)
+    estado['aux_list'].append(pensamento)
     print('Pensamento cadastrado com sucesso!')
     return
 
 def visualizar_pensamento(estado):
+
     if len(estado['pensamentos']) == 0:
         print('Nenhum pensamento cadastrado!')
+        return
 
     elif estado['descanso'] == True and estado['data'] == datetime.date.today():
         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
@@ -35,36 +41,38 @@ def visualizar_pensamento(estado):
     elif estado['data'] != datetime.date.today():
         estado['descanso'] = False
         estado['data'] = datetime.date.today()
-        estado['pensamento_diario'] = estado['pensamentos'][random.randint(0,len(estado['pensamentos'])-1)]
+
+        if len(estado['aux_list']) == 0:
+            print("Você visualizou todos os pensamentos que foram cadastrados nos últimos dias, agora reiniciaremos!")
+            estado['aux_list'] = estado['pensamentos'].copy()
+
+        estado['pensamento_diario'] = estado['aux_list'][random.randint(0,len(estado['aux_list'])-1)]
+        estado['aux_list'].remove(estado['pensamento_diario'])
         print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+
+
+        if len(estado['pensamentos']) < 9:
+            sample_size = len(estado['pensamentos'])//2
+        else:
+            sample_size = 4
+
+        daily_index = -1
+        for i, pensamento in enumerate(estado['pensamentos']):
+            if pensamento == estado['pensamento_diario']:
+                daily_index = i
+                break
+        index_list = list(range(len(estado['pensamentos'])))
+        index_list.remove(daily_index)
+
+        estado['sample'].clear()
+
+        index_sample = random.sample(index_list, sample_size)
+        for i in range(sample_size):
+            estado['sample'].append(estado['pensamentos'][index_sample[i]])
 
     elif estado['data'] == datetime.date.today():
         print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
     return
-
-# contador = 1
-# def visualizar_pensamento_manual(estado):
-#     global contador
-#     if estado['data'] is None:
-#         estado['data'] = datetime.date.today()
-#     else:
-#         estado['data'] += datetime.timedelta(days=contador)
-#         contador += 1
-#     if len(estado['pensamentos']) == 0:
-#         print('Nenhum pensamento cadastrado!')
-
-#     elif estado['descanso'] == True and estado['data'] == None:
-#         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
-
-#     elif estado['data'] != datetime.date.today():
-#         estado['descanso'] = False
-#         estado['data'] = datetime.date.today()
-#         estado['pensamento_diario'] = estado['pensamentos'][random.randint(0,len(estado['pensamentos'])-1)]
-#         print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
-
-#     elif estado['data'] == datetime.date.today():
-#         print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
-#     return
 
 def concluir_pensamento(estado):
     if len(estado['pensamentos']) == 0:
@@ -93,10 +101,108 @@ def concluir_pensamento(estado):
 
     return
 
+def mostrar_sample_diario(estado):
+    def obter_titulo_unico():
+        repetion = False
+        while not repetion:
+            novo_titulo = input('Digite o novo título do pensamento:\n').capitalize().strip()
+            
+            for pensamento in estado['pensamentos']:
+                if pensamento['title'] == novo_titulo:
+                    print('Esse título já foi cadastrado! Tente outro.')
+                    break
+
+            else:
+                repetion = True
+        return novo_titulo
+    if estado['data'] != datetime.date.today():
+        print('Você ainda não visualizou o pensamento diário de hoje! Faça isso para poder visualizar o sample de hoje.')
+        return
+    
+    if not estado['sample']:
+        print('Você possui menos de 2 pensamentos cadastrados, logo você não pode obter um sample.')
+        return
+    
+    print(f'Pensamento diário:\n{estado["pensamento_diario"]["title"]}') 
+    print('Sample diário:')
+    for pensamento in estado['sample']:
+        print(f"- {pensamento['title']}")
+
+    opcao = ''
+    while opcao != '2':
+        opcao = input('Você gostaria de editar o título de algum desses pensamentos?\n1 -> Sim\n2 -> Não\n').strip()
+
+        if opcao == '1':
+            print('Selecione o pensamento que deseja editar:')
+            print(f'0 -> {estado["pensamento_diario"]["title"]}')
+            for i in range(len(estado['sample'])):
+                print(f'{i+1} -> {estado['sample'][i]["title"]}')
+            
+            try:
+                escolha = int(input('Digite o número do pensamento que deseja editar:\n')) - 1
+                if 0 <= escolha < len(estado['sample']):
+                    novo_titulo = obter_titulo_unico()
+
+                    if estado['sample'][escolha]['title'] in estado['aux_list']:
+                        for pensamento in estado['aux_list']:
+                            if pensamento['title'] == estado['sample'][escolha]['title']:
+                                pensamento['title'] = novo_titulo
+                                break
+
+                    estado['sample'][escolha]['title'] = novo_titulo
+
+                    for pensamento in estado['pensamentos']:
+                        if pensamento['title'] == estado['sample'][escolha]['title']:
+                            pensamento['title'] = novo_titulo
+                            break
+                    print('Título do pensamento atualizado com sucesso!')
+                elif escolha == -1:
+                    novo_titulo = obter_titulo_unico()
+                    estado['pensamento_diario']['title'] = novo_titulo
+
+                    for pensamento in estado['pensamentos']:
+                        if pensamento['title'] == estado['pensamento_diario']['title']:
+                            pensamento['title'] = novo_titulo
+                            break
+                    print('Título do pensamento atualizado com sucesso!')
+
+                else:
+                    print('Escolha inválida.')
+            except ValueError:
+                print('Escolha inválida.')
+        elif opcao != '2':
+            print('Opção inválida!')
+
+    return
+
+# contador = 1
+# def visualizar_pensamento_manual(estado):
+#     global contador
+#     if estado['data'] is None:
+#         estado['data'] = datetime.date.today()
+#     else:
+#         estado['data'] += datetime.timedelta(days=contador)
+#         contador += 1
+#     if len(estado['pensamentos']) == 0:
+#         print('Nenhum pensamento cadastrado!')
+
+#     elif estado['descanso'] == True and estado['data'] == None:
+#         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
+
+#     elif estado['data'] != datetime.date.today():
+#         estado['descanso'] = False
+#         estado['data'] = datetime.date.today()
+#         estado['pensamento_diario'] = estado['pensamentos'][random.randint(0,len(estado['pensamentos'])-1)]
+#         print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+
+#     elif estado['data'] == datetime.date.today():
+#         print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
+#     return
+
 def menu(estado):
     opcao = ''
-    while opcao != '4':
-        opcao = input(f'Digite: \n1 -> Cadastrar pensamento\n2 -> Visualizar pensamento\n3 -> Concluir pensamento\n4 -> Sair\n')
+    while opcao != '0':
+        opcao = input(f'Digite: \n1 -> Cadastrar pensamento\n2 -> Visualizar pensamento diário\n3 -> Concluir pensamento\n4 -> Visualizar sample diário\n0 -> Sair\n').strip()
         if opcao == '1':
             cadastrar_pensamento(estado)
         elif opcao == '2':
@@ -104,11 +210,13 @@ def menu(estado):
         elif opcao == '3':
             concluir_pensamento(estado)
         elif opcao == '4':
+            mostrar_sample_diario(estado)
+        elif opcao == '0':
             print('Até amanhã!')
-        
-        # Função para alterar a data manualmente
+                # Função para alterar a data manualmente
         # elif opcao == '!':
         #     visualizar_pensamento_manual(estado)
+    
         else:
             print('Opção inválida!')
 
