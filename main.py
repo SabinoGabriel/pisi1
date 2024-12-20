@@ -71,7 +71,7 @@ def visualizar_pensamento(estado):
             estado['sample'].append(estado['pensamentos'][index_sample[i]])
 
     elif estado['data'] == datetime.date.today():
-        print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
+        print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
     return
 
 def concluir_pensamento(estado):
