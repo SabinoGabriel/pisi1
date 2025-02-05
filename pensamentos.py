@@ -1,3 +1,5 @@
+import datetime
+
 def cadastrar_pensamento(estado):
     if len(estado['pensamentos']) == 20:
         print('Limite de pensamentos atingido!')
@@ -126,44 +128,67 @@ def mostrar_sample_diario(estado):
                 
         opcao = input('Você gostaria de editar o título de algum desses pensamentos?\n1 -> Sim\n2 -> Não\n').strip()
 
-        if opcao == '1':
+        if opcao == '1' and not estado['descanso']:
             print('Selecione o pensamento que deseja editar:')
             print(f'0 -> {estado["pensamento_diario"]["title"]}')
             for i in range(len(estado['sample'])):
                 print(f'{i+1} -> {estado['sample'][i]["title"]}')
             
-            try:
-                escolha = int(input('Digite o número do pensamento que deseja editar:\n')) - 1
-                if 0 <= escolha < len(estado['sample']):
-                    novo_titulo = obter_titulo_unico()
+            escolha = int(input('Digite o número do pensamento que deseja editar:\n')) - 1
+            if 0 <= escolha < len(estado['sample']):
+                novo_titulo = obter_titulo_unico()
 
-                    if estado['sample'][escolha]['title'] in estado['aux_list']:
-                        for pensamento in estado['aux_list']:
-                            if pensamento['title'] == estado['sample'][escolha]['title']:
-                                pensamento['title'] = novo_titulo
-                                break
-
-                    estado['sample'][escolha]['title'] = novo_titulo
-
-                    for pensamento in estado['pensamentos']:
+                if estado['sample'][escolha]['title'] in estado['aux_list']:
+                    for pensamento in estado['aux_list']:
                         if pensamento['title'] == estado['sample'][escolha]['title']:
                             pensamento['title'] = novo_titulo
                             break
-                    print('Título do pensamento atualizado com sucesso!')
-                elif escolha == -1:
-                    novo_titulo = obter_titulo_unico()
-                    estado['pensamento_diario']['title'] = novo_titulo
 
-                    for pensamento in estado['pensamentos']:
-                        if pensamento['title'] == estado['pensamento_diario']['title']:
+                estado['sample'][escolha]['title'] = novo_titulo
+
+                for pensamento in estado['pensamentos']:
+                    if pensamento['title'] == estado['sample'][escolha]['title']:
+                        pensamento['title'] = novo_titulo
+                        break
+                print('Título do pensamento atualizado com sucesso!')
+            elif escolha == -1:
+                novo_titulo = obter_titulo_unico()
+                estado['pensamento_diario']['title'] = novo_titulo
+
+                for pensamento in estado['pensamentos']:
+                    if pensamento['title'] == estado['pensamento_diario']['title']:
+                        pensamento['title'] = novo_titulo
+                        break
+                print('Título do pensamento atualizado com sucesso!')
+
+            else:
+                print('Escolha inválida.')
+
+        elif opcao == '1' and estado['descanso']:
+            print('Selecione o pensamento que deseja editar:')
+            for i in range(len(estado['sample'])):
+                print(f'{i} -> {estado['sample'][i]["title"]}')
+            
+            escolha = int(input('Digite o número do pensamento que deseja editar:\n'))
+            if 0 >= escolha <= len(estado['sample']):
+                novo_titulo = obter_titulo_unico()
+
+                if estado['sample'][escolha]['title'] in estado['aux_list']:
+                    for pensamento in estado['aux_list']:
+                        if pensamento['title'] == estado['sample'][escolha]['title']:
                             pensamento['title'] = novo_titulo
                             break
-                    print('Título do pensamento atualizado com sucesso!')
 
-                else:
-                    print('Escolha inválida.')
-            except ValueError:
+                estado['sample'][escolha]['title'] = novo_titulo
+
+                for pensamento in estado['pensamentos']:
+                    if pensamento['title'] == estado['sample'][escolha]['title']:
+                        pensamento['title'] = novo_titulo
+                        break
+                print('Título do pensamento atualizado com sucesso!')
+            else:
                 print('Escolha inválida.')
+       
         elif opcao != '2':
             print('Opção inválida!')
 
