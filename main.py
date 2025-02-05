@@ -1,15 +1,56 @@
 import random
 import datetime
 
-estado = {
-    'pensamentos': [],
-    'pensamento_diario': None,
-    'descanso': False,
-    'data': None,
-    'aux_list': [],
-    'sample': [],
-    'freezer': []
-}
+
+def salvar_estado(estado, arquivo='estado.txt'):
+    with open(arquivo, 'w') as f:
+        f.write(f"pensamento_diario:{estado['pensamento_diario']['title'] if estado['pensamento_diario'] else ''}\n")
+        f.write(f"descanso:{estado['descanso']}\n")
+        f.write(f"data:{estado['data']}\n")
+        f.write("pensamentos:\n")
+        for pensamento in estado['pensamentos']:
+            f.write(f"{pensamento['title']}\n")
+        f.write("aux_list:\n")
+        for pensamento in estado['aux_list']:
+            f.write(f"{pensamento['title']}\n")
+        f.write("sample:\n")
+        for pensamento in estado['sample']:
+            f.write(f"{pensamento['title']}\n")
+    print('Estado salvo com sucesso!')
+
+def carregar_estado(arquivo='estado.txt'):
+    estado = {
+        'pensamentos': [],
+        'pensamento_diario': None,
+        'descanso': False,
+        'data': None,
+        'aux_list': [],
+        'sample': [],
+    }
+    try:
+        with open(arquivo, 'r') as f:
+            linhas = f.readlines()
+            estado['pensamento_diario'] = {'title': linhas[0].split(':')[1].strip()} if linhas[0].split(':')[1].strip() else None
+            estado['descanso'] = linhas[1].split(':')[1].strip() == 'True'
+            estado['data'] = datetime.datetime.strptime(linhas[2].split(':')[1].strip(), '%Y-%m-%d').date() if linhas[2].split(':')[1].strip() else None
+
+            secao = None
+            for linha in linhas[3:]:
+                linha = linha.strip()
+                if not linha:
+                    continue
+                if linha.endswith(':'):
+                    secao = linha[:-1]
+                elif secao == 'pensamentos':
+                    estado['pensamentos'].append({'title': linha})
+                elif secao == 'aux_list':
+                    estado['aux_list'].append({'title': linha})
+                elif secao == 'sample':
+                    estado['sample'].append({'title': linha})
+        print('Estado carregado com sucesso!')
+    except FileNotFoundError:
+        print('Seja bem-vindo! Vamos começar a cadastrar seus pensamentos!')
+    return estado
 
 def cadastrar_pensamento(estado):
     if len(estado['pensamentos']) == 20:
@@ -48,7 +89,7 @@ def visualizar_pensamento(estado):
 
         estado['pensamento_diario'] = estado['aux_list'][random.randint(0,len(estado['aux_list'])-1)]
         estado['aux_list'].remove(estado['pensamento_diario'])
-        print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+        print(f'Pensamento do dia:\n{estado["pensamento_diario"]["title"]}')
 
 
         if len(estado['pensamentos']) < 9:
@@ -120,16 +161,21 @@ def mostrar_sample_diario(estado):
         return
     
     if not estado['sample']:
-        print('Você possui menos de 2 pensamentos cadastrados, logo você não pode obter um sample.')
+        print('Você iniciou seu dia com menos de 2 pensamentos cadastrados, logo você não pode obter um sample hoje.')
         return
-    
-    print(f'Pensamento diário:\n{estado["pensamento_diario"]["title"]}') 
-    print('Sample diário:')
-    for pensamento in estado['sample']:
-        print(f"- {pensamento['title']}")
 
     opcao = ''
     while opcao != '2':
+        if not estado['descanso']:
+            print(f'Pensamento diário:\n{estado["pensamento_diario"]["title"]}') 
+            print('Sample diário:')
+            for pensamento in estado['sample']:
+                print(f"- {pensamento['title']}")
+        else:
+            print('Sample diário:')
+            for pensamento in estado['sample']:
+                print(f"- {pensamento['title']}")
+                
         opcao = input('Você gostaria de editar o título de algum desses pensamentos?\n1 -> Sim\n2 -> Não\n').strip()
 
         if opcao == '1':
@@ -174,32 +220,9 @@ def mostrar_sample_diario(estado):
             print('Opção inválida!')
 
     return
-
-# contador = 1
-# def visualizar_pensamento_manual(estado):
-#     global contador
-#     if estado['data'] is None:
-#         estado['data'] = datetime.date.today()
-#     else:
-#         estado['data'] += datetime.timedelta(days=contador)
-#         contador += 1
-#     if len(estado['pensamentos']) == 0:
-#         print('Nenhum pensamento cadastrado!')
-
-#     elif estado['descanso'] == True and estado['data'] == None:
-#         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
-
-#     elif estado['data'] != datetime.date.today():
-#         estado['descanso'] = False
-#         estado['data'] = datetime.date.today()
-#         estado['pensamento_diario'] = estado['pensamentos'][random.randint(0,len(estado['pensamentos'])-1)]
-#         print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
-
-#     elif estado['data'] == datetime.date.today():
-#         print(f'Pensamento do dia:\n {estado['pensamento_diario']}')
-#     return
-
+estado = carregar_estado()
 def menu(estado):
+    
     opcao = ''
     while opcao != '0':
         opcao = input(f'Digite: \n1 -> Cadastrar pensamento\n2 -> Visualizar pensamento diário\n3 -> Concluir pensamento\n4 -> Visualizar sample diário\n0 -> Sair\n').strip()
@@ -212,11 +235,8 @@ def menu(estado):
         elif opcao == '4':
             mostrar_sample_diario(estado)
         elif opcao == '0':
+            salvar_estado(estado)
             print('Até amanhã!')
-                # Função para alterar a data manualmente
-        # elif opcao == '!':
-        #     visualizar_pensamento_manual(estado)
-    
         else:
             print('Opção inválida!')
 
