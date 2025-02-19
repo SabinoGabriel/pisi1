@@ -2,7 +2,7 @@
 
 # Pisi1
 
-Este repositório contém um programa para gerenciar pensamentos diários, desenvolvido para a cadeira de Projetos Interdisciplinares 1 do curso de Sistema de Informação.
+Este repositório contém um programa para gerenciar pensamentos diários, desenvolvido para a cadeira de Projetos Interdisciplinares 1 do curso de Bacharelado em Sistemas de Informação da UFRPE.
 
 ## Arquivos
 
