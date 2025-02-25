@@ -1,4 +1,5 @@
 import datetime
+import random
 
 def cadastrar_pensamento(estado):
     if len(estado['pensamentos']) == 20:
@@ -19,9 +20,6 @@ def cadastrar_pensamento(estado):
     return
 
 def visualizar_pensamento(estado):
-    import random
-    import datetime
-
     if len(estado['pensamentos']) == 0:
         print('Nenhum pensamento cadastrado!')
         return
@@ -40,7 +38,6 @@ def visualizar_pensamento(estado):
         estado['pensamento_diario'] = estado['aux_list'][random.randint(0,len(estado['aux_list'])-1)]
         estado['aux_list'].remove(estado['pensamento_diario'])
         print(f'Pensamento do dia:\n{estado["pensamento_diario"]["title"]}')
-
 
         if len(estado['pensamentos']) < 9:
             sample_size = len(estado['pensamentos'])//2
@@ -62,7 +59,7 @@ def visualizar_pensamento(estado):
             estado['sample'].append(estado['pensamentos'][index_sample[i]])
 
     elif estado['data'] == datetime.date.today():
-        print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+        print(f'Pensamento do dia:\n {estado["pensamento_diario"]["title"]}')
     return
 
 def concluir_pensamento(estado):
@@ -76,7 +73,7 @@ def concluir_pensamento(estado):
         print('Dever cumprido!\nUtilize o resto do dia para descansar.')
 
     elif estado['pensamento_diario'] is not None:
-        print(f'Pensamento do dia:\n {estado['pensamento_diario']['title']}')
+        print(f'Pensamento do dia:\n {estado["pensamento_diario"]["title"]}')
         
         for pensamento in estado['pensamentos']:
             if pensamento['title'] == estado['pensamento_diario']['title']:
@@ -132,7 +129,7 @@ def mostrar_sample_diario(estado):
             print('Selecione o pensamento que deseja editar:')
             print(f'0 -> {estado["pensamento_diario"]["title"]}')
             for i in range(len(estado['sample'])):
-                print(f'{i+1} -> {estado['sample'][i]["title"]}')
+                print(f'{i+1} -> {estado["sample"][i]["title"]}')
             
             escolha = int(input('Digite o número do pensamento que deseja editar:\n')) - 1
             if 0 <= escolha < len(estado['sample']):
