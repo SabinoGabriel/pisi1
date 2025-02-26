@@ -6,7 +6,11 @@ def salvar_usuarios(usuarios, arquivo='usuarios.txt'):
             if '@' in email:
                 f.write(f"{email}:{dados['cpf']}:{dados['senha']}\n")
                 f.write("estado:\n")
-                f.write(f"pensamento_diario:{dados['estado']['pensamento_diario']}\n")
+                pensamento_diario = dados['estado']['pensamento_diario']
+                if pensamento_diario:
+                    f.write(f"pensamento_diario:{pensamento_diario['title']}\n")
+                else:
+                    f.write("pensamento_diario:None\n")
                 f.write(f"descanso:{dados['estado']['descanso']}\n")
                 f.write(f"data:{dados['estado']['data']}\n")
                 f.write("pensamentos:\n")
@@ -31,13 +35,18 @@ def carregar_usuarios(arquivo='usuarios.txt'):
                 if len(linhas_bloco) < 4:
                     continue
                 email, cpf, senha = linhas_bloco[0].split(':')
+                pensamento_diario_str = linhas_bloco[2].split(':')[1].strip()
+                if pensamento_diario_str != 'None':
+                    pensamento_diario = {'title': pensamento_diario_str}
+                else:
+                    pensamento_diario = None
                 data_str = linhas_bloco[4].split(':')[1].strip()
                 if data_str != 'None':
                     data = datetime.datetime.strptime(data_str, '%Y-%m-%d').date()
                 else:
                     data = None
                 estado = {
-                    'pensamento_diario': linhas_bloco[2].split(':')[1].strip(),
+                    'pensamento_diario': pensamento_diario,
                     'descanso': linhas_bloco[3].split(':')[1].strip() == 'True',
                     'data': data,
                     'pensamentos': [],
