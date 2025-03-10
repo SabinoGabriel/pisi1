@@ -16,10 +16,40 @@ def cadastrar_pensamento(estado):
     pensamento = {'title': titulo}
     estado['pensamentos'].append(pensamento)
     estado['aux_list'].append(pensamento)
+    estado['mensal']['Creations'] += 1
     print('Pensamento cadastrado com sucesso!')
     return
 
 def visualizar_pensamento(estado):
+    atual = datetime.date.today()
+    if estado['data'] is not None and (estado['data'].month != atual.month or estado['data'].year != atual.year):
+        print("Retrospecto mensal:\n")
+        if estado['mensal']['Views'] == 0:
+            print('Nenhum pensamento visualizado este mês!')
+        elif estado['mensal']['Views'] <= 10:
+            print("Procure melhorar o seu comprometimento com a sua saúde mental, busque mais constância na visualização dos pensamentos.")
+            if estado['mensal']['Conclusions'] > 5:
+                print("Ao menos você demonstrou atitude ao concluir boa parte dos pensamentos que visualizou, continue assim!")
+        elif estado['mensal']['Views'] < 16:
+            print("Você conseguiu se dedicar a organização da sua mente mês passado por meio da reflexão sobre seus pensamentos, mas ainda pode melhorar!Continue se esforçando.")
+            if estado['mensal']['Conclusions'] < 5:
+                print("Busque também as respostas que você procura em seus pensamentos, conclua mais pensamentos para obter mais clareza sobre si mesmo.")
+        elif estado['mensal']['Views'] >= 16:
+            print("Parabéns! Você se dedicou a organização da sua mente mês passado, continue assim!")
+            if estado['mensal']['Conclusions'] < 5:
+                print("Busque também as respostas que você procura em seus pensamentos, conclua mais pensamentos para obter mais clareza sobre si mesmo.")
+
+        for key, value in estado['mensal'].items():
+            print(f"{key}: {value}")
+            estado['anual'][key] += value
+            estado['mensal'][key] = 0
+        
+        if estado['data'].month == 12:
+            print("E mais um ano se passou!\nRetrospecto anual:\n")
+            for key, value in estado['anual'].items():
+                print(f"{key}: {value}")
+                estado['anual'][key] = 0
+
     if len(estado['pensamentos']) == 0:
         print('Nenhum pensamento cadastrado!')
         return
@@ -30,6 +60,7 @@ def visualizar_pensamento(estado):
     elif estado['data'] != datetime.date.today():
         estado['descanso'] = False
         estado['data'] = datetime.date.today()
+        estado['mensal']['Views'] += 1
 
         if len(estado['aux_list']) == 0:
             print("Você visualizou todos os pensamentos que foram cadastrados nos últimos dias, agora reiniciaremos!")
@@ -83,6 +114,7 @@ def concluir_pensamento(estado):
         print('Pensamento concluído!\nDescanse sua mente para o próximo desafio.')
         estado['descanso'] = True
         estado['pensamento_diario'] = None
+        estado['mensal']['Conclusions'] += 1
 
     else:
         print('Você não visualizou o pensamento do dia!')
