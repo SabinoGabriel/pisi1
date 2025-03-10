@@ -1,6 +1,6 @@
 ---
 
-# Pisi1
+# Projetos Interdisciplinares para Sistemas de Informação 1
 
 Este repositório contém um programa para gerenciar pensamentos diários, desenvolvido para a cadeira de Projetos Interdisciplinares 1 do curso de Bacharelado em Sistemas de Informação da UFRPE.
 
@@ -28,6 +28,12 @@ Este repositório contém um programa para gerenciar pensamentos diários, desen
 5. **Gerenciar Usuário**
    - Criar conta, fazer login, alterar senha e excluir conta.
 
+6. **Verificação de Constância de Acesso**
+   - Verifica a constância de acesso dos usuários, incentivando a regularidade no uso do sistema.
+
+7. **Retrospecto Mensal e Anual**
+   - Exibe um retrospecto mensal e anual das atividades do usuário, incluindo o número de pensamentos cadastrados, concluídos e visualizados.
+
 ## Como Executar
 
 1. Clone o repositório:
@@ -50,5 +56,7 @@ O estado do programa é salvo em um arquivo `usuarios.txt` e contém as seguinte
 - `pensamentos`: Lista de todos os pensamentos cadastrados.
 - `aux_list`: Lista auxiliar de pensamentos para visualização do pensamento diário.
 - `sample`: Sample diário de pensamentos.
+- `mensal`: Retrospecto mensal das atividades (criações, conclusões, visualizações).
+- `anual`: Retrospecto anual das atividades (criações, conclusões, visualizações).
 
 ---
