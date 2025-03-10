@@ -8,6 +8,7 @@ Este repositório contém um programa para gerenciar pensamentos diários, desen
 
 - `pensamentos.py`: Contém funções para cadastrar, visualizar, concluir e mostrar um sample diário de pensamentos.
 - `menu.py`: Contém o menu principal do programa que permite a interação com o usuário através de opções.
+- `usuario.py`: Contém funções para criar conta, fazer login, alterar senha e excluir conta.
 - `estado.py`: Contém funções para salvar e carregar o estado do programa em um arquivo.
 
 ## Funcionalidades
@@ -24,6 +25,9 @@ Este repositório contém um programa para gerenciar pensamentos diários, desen
 4. **Mostrar Sample Diário**
    - Exibe e permite a edição de um sample diário de pensamentos cadastrados.
 
+5. **Gerenciar Usuário**
+   - Criar conta, fazer login, alterar senha e excluir conta.
+
 ## Como Executar
 
 1. Clone o repositório:
@@ -39,7 +43,7 @@ Este repositório contém um programa para gerenciar pensamentos diários, desen
 
 ## Estrutura do Estado
 
-O estado do programa é salvo em um arquivo `estado.txt` e contém as seguintes informações:
+O estado do programa é salvo em um arquivo `usuarios.txt` e contém as seguintes informações:
 - `pensamento_diario`: O pensamento diário atual.
 - `descanso`: Indica se o pensamento diário foi concluído.
 - `data`: A última data em que o pensamento diário foi visualizado.
