@@ -2,36 +2,18 @@ def validar_email(email):
     return '@' in email and '.' in email
 
 def validar_cpf(cpf):
-    cpf_list = []
-    if len(cpf) != 11:
+    cpf = ''.join(filter(str.isdigit, str(cpf)))
+    if len(cpf) != 11 or cpf == cpf[0] * 11:
         return False
-
-    for i in cpf:
-        cpf_list.append(int(i))
-
-    def calcular_soma(indice_inicial):
-        soma = 0
-        multiplier = 2
-        for i in range(indice_inicial, -1, -1):
-            soma += cpf_list[i] * multiplier
-            multiplier += 1
-        return soma
-
-    soma_1 = calcular_soma(8)
-    remainder_1 = soma_1 % 11
-    digit_1 = 0 if remainder_1 < 2 else 11 - remainder_1
-    if digit_1 != cpf_list[9]:
+    soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
+    digito1 = 0 if soma % 11 < 2 else 11 - soma % 11
+    if digito1 != int(cpf[9]):
         return False
+    soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+    digito2 = 0 if soma % 11 < 2 else 11 - soma % 11
+    return digito2 == int(cpf[10])
 
-    soma_2 = calcular_soma(9)
-    remainder_2 = soma_2 % 11
-    digit_2 = 0 if remainder_2 < 2 else 11 - remainder_2
-    if digit_2 != cpf_list[10]:
-        return False
-
-    return True
-
-def criar_conta(usuarios):
+def criar_conta(usuarios, contador_id):
     email = input('Digite seu email:\n').strip()
     while not validar_email(email):
         print('Email inválido! Tente novamente.')
@@ -47,12 +29,18 @@ def criar_conta(usuarios):
         print('Senha muito curta! Tente novamente.')
         senha = input('Digite sua senha (mínimo 6 caracteres):\n').strip()
     
-    # Verificar se o email ou CPF já estão cadastrados
-    email_ja_cadastrado = any(user['cpf'] == cpf or user['email'] == email for user in usuarios.values())
+    email_ja_cadastrado = False
+    for user in usuarios.values():
+        if user['cpf'] == cpf or user['email'] == email:
+            email_ja_cadastrado = True
+            break
+
     if email_ja_cadastrado:
         print('Usuário já cadastrado com este email ou CPF!')
     else:
-        usuarios[email] = {
+        id = str(contador_id)
+        usuarios[id] = {
+            "email": email,
             "cpf": cpf,
             "senha": senha,
             "estado": {
@@ -64,19 +52,20 @@ def criar_conta(usuarios):
                 "sample": []
             }
         }
-        usuarios[cpf] = usuarios[email]
+        contador_id += 1
         print('Conta criada com sucesso!')
-    return usuarios
+        return usuarios, contador_id, True
+    return usuarios, contador_id, False
 
 def fazer_login(usuarios):
     identificador = input('Digite seu email ou CPF:\n').strip()
     senha = input('Digite sua senha:\n').strip()
 
-    if '@' in identificador:
-        usuario = usuarios.get(identificador)
-    else:
-        usuario = next((user for user in usuarios.values() if user['cpf'] == identificador), None)
-    
+    usuario = None
+    for user in usuarios.values():
+        if user['email'] == identificador or user['cpf'] == identificador:
+            usuario = user
+            break
 
     if usuario and usuario['senha'] == senha:
         print('Login efetuado com sucesso!')
@@ -84,3 +73,17 @@ def fazer_login(usuarios):
     else:
         print('Email/CPF ou senha incorretos!')
         return None
+
+def alterar_senha(usuario):
+    nova_senha = input('Digite sua nova senha (mínimo 6 caracteres):\n').strip()
+    while len(nova_senha) < 6:
+        print('Senha muito curta! Tente novamente.')
+        nova_senha = input('Digite sua nova senha (mínimo 6 caracteres):\n').strip()
+    usuario['senha'] = nova_senha
+    print('Senha alterada com sucesso!')
+
+def excluir_conta(usuario, usuarios):
+    for id, user in usuarios.items():
+        if user == usuario:
+            del usuarios[id]
+            break
