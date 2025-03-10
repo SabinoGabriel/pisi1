@@ -21,6 +21,13 @@ def salvar_usuarios(usuarios, contador_id, arquivo='usuarios.txt'):
             for pensamento in dados['estado']['sample']:
                 f.write(f"{pensamento['title']}\n")
 
+            f.write("mensal:\n")
+            for key, value in dados['estado']['mensal'].items():
+                f.write(f"{key}:{value}\n")
+            f.write("anual:\n")
+            for key, value in dados['estado']['anual'].items():
+                f.write(f"{key}:{value}\n")
+
 def carregar_usuarios(arquivo='usuarios.txt'):
     usuarios = {}
     contador_id = 0
@@ -50,25 +57,54 @@ def carregar_usuarios(arquivo='usuarios.txt'):
                     i += 2
                     pensamentos = []
                     while linhas[i].strip() != 'aux_list:':
-                        pensamentos.append({'title': linhas[i].strip()})
+                        titulo = linhas[i].strip()
+                        if titulo:
+                            pensamentos.append({'title': titulo})
                         i += 1
                     i += 1
                     aux_list = []
                     while linhas[i].strip() != 'sample:':
-                        aux_list.append({'title': linhas[i].strip()})
+                        titulo = linhas[i].strip()
+                        if titulo:
+                            aux_list.append({'title': titulo})
                         i += 1
                     i += 1
                     sample = []
-                    while i < len(linhas) and linhas[i].strip() != '---':
-                        sample.append({'title': linhas[i].strip()})
+                    while i < len(linhas) and not (linhas[i].strip() in ['mensal:', 'anual:', '---']):
+                        titulo = linhas[i].strip()
+                        if titulo:
+                            sample.append({'title': titulo})
                         i += 1
+
+                    mensal = {'Creations': 0, 'Conclusions': 0, 'Views': 0}
+                    if i < len(linhas) and linhas[i].strip() == 'mensal:':
+                        i += 1
+                        while i < len(linhas) and not (linhas[i].strip() in ['anual:', '---']):
+                            partes = linhas[i].strip().split(':')
+                            if len(partes) == 2:
+                                key, value = partes
+                                mensal[key] = int(value)
+                            i += 1
+
+                    anual = {'Creations': 0, 'Conclusions': 0, 'Views': 0}
+                    if i < len(linhas) and linhas[i].strip() == 'anual:':
+                        i += 1
+                        while i < len(linhas) and not linhas[i].strip() == '---':
+                            partes = linhas[i].strip().split(':')
+                            if len(partes) == 2:
+                                key, value = partes
+                                anual[key] = int(value)
+                            i += 1
+
                     estado = {
                         'pensamento_diario': pensamento_diario,
                         'descanso': descanso,
                         'data': data,
                         'pensamentos': pensamentos,
                         'aux_list': aux_list,
-                        'sample': sample
+                        'sample': sample,
+                        'mensal': mensal,
+                        'anual': anual
                     }
                     usuarios[id] = {'email': email, 'cpf': cpf, 'senha': senha, 'estado': estado}
                 else:

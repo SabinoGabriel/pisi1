@@ -49,7 +49,9 @@ def criar_conta(usuarios, contador_id):
                 "descanso": False,
                 "data": None,
                 "aux_list": [],
-                "sample": []
+                "sample": [],
+                "mensal": {'Creations': 0,'Conclusions':0,'Views':0},
+                "anual": {'Creations': 0,'Conclusions':0,'Views':0}
             }
         }
         contador_id += 1
