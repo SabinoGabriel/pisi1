@@ -4,7 +4,12 @@
 
 Este repositório contém um programa para gerenciar pensamentos diários, desenvolvido para a cadeira de Projetos Interdisciplinares 1 do curso de Bacharelado em Sistemas de Informação da UFRPE.
 
-## Arquivos
+## Bibliotecas Utilizadas
+
+- `datetime`: Utilizada para manipulação e formatação de datas, essencial para verificar a constância de acesso e gerar retrospectivas mensais e anuais.
+- `random`: Utilizada para selecionar pensamentos aleatórios para exibição diária e para o sample diário.
+
+## Organização dos Módulos
 
 - `pensamentos.py`: Contém funções para cadastrar, visualizar, concluir e mostrar um sample diário de pensamentos.
 - `menu.py`: Contém o menu principal do programa que permite a interação com o usuário através de opções.
@@ -34,16 +39,20 @@ Este repositório contém um programa para gerenciar pensamentos diários, desen
 7. **Retrospecto Mensal e Anual**
    - Exibe um retrospecto mensal e anual das atividades do usuário, incluindo o número de pensamentos cadastrados, concluídos e visualizados.
 
+## Inovação do Projeto
+
+- **Gamificação**: O sistema inclui uma funcionalidade de gamificação que verifica a constância de acesso dos usuários e gera um retrospecto mensal e anual. Isso incentiva os usuários a manterem uma rotina regular de reflexão e conclusão de pensamentos, promovendo uma melhor organização mental e pessoal.
+
 ## Como Executar
 
-1. Clone o repositório:
-   ```bash
+1. Abra o terminal e clone o repositório:
+   ```sh
    git clone https://github.com/SabinoGabriel/pisi1.git
    cd pisi1
    ```
 
 2. Execute o programa:
-   ```bash
+   ```sh
    python3 menu.py
    ```
 
