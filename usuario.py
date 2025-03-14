@@ -1,5 +1,8 @@
+import re
+
 def validar_email(email):
-    return '@' in email and '.' in email
+    padrao = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(padrao, email) is not None
 
 def validar_cpf(cpf):
     cpf = ''.join(filter(str.isdigit, str(cpf)))
@@ -31,7 +34,9 @@ def criar_conta(usuarios, contador_id):
     
     email_ja_cadastrado = False
     for user in usuarios.values():
-        if user['cpf'] == cpf or user['email'] == email:
+        cpf_existente = ''.join(filter(str.isdigit, user['cpf']))
+        cpf_novo = ''.join(filter(str.isdigit, cpf))
+        if cpf_existente == cpf_novo or user['email'] == email:
             email_ja_cadastrado = True
             break
 
@@ -63,15 +68,15 @@ def fazer_login(usuarios):
     identificador = input('Digite seu email ou CPF:\n').strip()
     senha = input('Digite sua senha:\n').strip()
 
-    usuario = None
-    for user in usuarios.values():
-        if user['email'] == identificador or user['cpf'] == identificador:
-            usuario = user
+    usuario_id = None
+    for id, user in usuarios.items():
+        if (user['email'] == identificador or user['cpf'] == identificador) and user['senha'] == senha:
+            usuario_id = id
             break
 
-    if usuario and usuario['senha'] == senha:
+    if usuario_id:
         print('Login efetuado com sucesso!')
-        return usuario['estado']
+        return usuario_id
     else:
         print('Email/CPF ou senha incorretos!')
         return None
